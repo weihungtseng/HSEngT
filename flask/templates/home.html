@@ -89,6 +89,7 @@
             <br>
         </table>
         <br>
+        <input type="hidden" name="permissions" value={{ permissions }}>
         <input type="Submit" value="查詢">
         <a href="/">登出</a>
     </form>
@@ -103,7 +104,7 @@
             filter(|)
         -->
         {% if results|length < 1 %}
-        <h4 style="text-align: center">There is no record or you have to query</h4>
+        <h4 style="text-align: center">There is no record or your permission is denied</h4>
         {% else %}
         <div class="gray-box">
             <h1>搜尋結果：{{ result_num }} 筆</h1>

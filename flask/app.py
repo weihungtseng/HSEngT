@@ -32,6 +32,14 @@ app = Flask(__name__) # referencing this file
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///HSEngT.db'
 # db = SQLAlchemy(app) # initialize database
 
+levelMap = {
+    'platinum'  : '1', 
+    'diamond'   : '2', 
+    'ascendant' : '3', 
+    'immortal'  : '4', 
+    'radiant'   : '5'
+}
+
 def get_db_connection():
     conn = sqlite3.connect('HSEngT.db')
     conn.row_factory = sqlite3.Row
@@ -41,7 +49,7 @@ def login_legal(account, password):
     conn = get_db_connection()
     results = conn.execute(f'''
         SELECT 
-            account, password 
+            account, password, level 
         FROM 
             Account 
         WHERE 
@@ -52,10 +60,10 @@ def login_legal(account, password):
     conn.close()
     # print(results[0][0], results[0][1])
     # print("len(results) = ", len(results), file=sys.stderr)
-    if len(results) != 0: return True
-    else:                 return False
+    if len(results) != 0: return True , results[0][2]
+    else:                 return False, 0
 
-def register_legal(account, password):
+def register_legal(account, password, permissions):
     ## If account already exist
     conn = get_db_connection()
     results = conn.execute(f'''
@@ -67,7 +75,7 @@ def register_legal(account, password):
             account = '{account}'
     ''').fetchall()
     conn.close()
-    if results: return False
+    if results: return False, 'account have been register'
     
     ## If password already exist
     conn = get_db_connection()
@@ -80,22 +88,23 @@ def register_legal(account, password):
             password = '{password}'
     ''').fetchall()
     conn.close()
-    if results: return False
+    if results: return False, 'password have been register'
+
+    if permissions not in ['platinum', 'diamond', 'ascendant', 'immortal', 'radiant']: return False, 'permissions code error'
 
     ## Insert
     conn = get_db_connection()
     conn.execute(f'''
         INSERT INTO 
-            Account (account, password, createDate) 
+            Account (account, password, level, createDate) 
         VALUES 
-            ('{account}', '{password}', DATETIME('now', '+8 hours'))
+            ('{account}', '{password}', '{levelMap[permissions]}', DATETIME('now', '+8 hours'))
     ''')
     conn.commit()
     conn.close()
-    return True
+    return True, ''
 
-
-def home_func1(root_type, root, word, version, level, lesson, frequency):
+def home_func1(root_type, root, word, version, level, lesson, frequency, permissions):
     ## Make select column & where condition string
     select_flag = [1]*7
     where_flag = [0]*7
@@ -146,14 +155,22 @@ def home_func1(root_type, root, word, version, level, lesson, frequency):
             where_condition += f"version = '{version}' "
             where_flag[col_map['version']] = 1
 
+    ## If level input = '!'
     if level in ban_sign: select_flag[col_map['level']] = 0
     else: 
         if 1 in select_flag[:4]: select_column += ', '
         select_column += 'level'
-        if level: 
-            if 1 in where_flag[:4]: where_condition += 'AND '
-            where_condition += f"level = '{level}' "
-            where_flag[col_map['level']] = 1
+        
+        if 1 in where_flag[:4]: where_condition += 'AND '
+        ## If level have input
+        if level:
+            ## Permissions pass
+            if permissions >= level[-1]: where_condition += f"level = '{level}' "
+            else:                        where_condition += f"level = 'permissionDeny' "
+        ## If level = ''
+        else:
+            where_condition += f"level <= 'B{permissions}' "
+        where_flag[col_map['level']] = 1
     
     if lesson in ban_sign: select_flag[col_map['lesson']] = 0
     else: 
@@ -197,9 +214,10 @@ def login():
         account = request.form['account'].strip()
         password = request.form['password'].strip()
         inputList = [account, password]
-        if login_legal(account, password):
+        status, permissions = login_legal(account, password)
+        if status:
             inputList = ['']*7
-            return render_template('home.html', inputList = inputList)
+            return render_template('home.html', inputList = inputList, permissions = permissions)
         else:
             errorMessage = 'Input error or you have to register'
             return render_template('login.html', inputList = inputList, errorMessage = errorMessage)
@@ -207,19 +225,19 @@ def login():
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'GET':
-        inputList = ['']*2
+        inputList = ['']*3
         errorMessage = ''
         return render_template('register.html', inputList = inputList, errorMessage = errorMessage)
     else:
         account = request.form['account'].strip()
         password = request.form['password'].strip()
-        inputList = [account, password]
-        if register_legal(account, password):
+        permissions = request.form['permissions'].strip()
+        inputList = [account, password, permissions]
+        status, errorMessage = register_legal(account, password, permissions)
+        if status:
             inputList = ['']*7
-            return render_template('home.html', inputList = inputList)
+            return render_template('home.html', inputList = inputList, permissions = levelMap[permissions])
         else:
-            # print("check", file=sys.stderr)
-            errorMessage = 'account or password have been register'
             return render_template('register.html', inputList = inputList, errorMessage = errorMessage)
 
 @app.route('/home', methods=['POST', 'GET'])
@@ -235,20 +253,21 @@ def home():
         level = request.form['level'].strip()
         lesson = request.form['lesson'].strip()
         frequency = request.form['frequency'].strip()
+        permissions = request.form['permissions'].strip()
         ## Create inputList
         inputList = [root_type, root, word, version, level, lesson, frequency]
         # inputList = [word, version, level, lesson, frequency]
         if frequency:
             if frequency != '!' and frequency != '！': int(frequency)
         
-        results = home_func1(root_type, root, word, version, level, lesson, frequency)
+        results = home_func1(root_type, root, word, version, level, lesson, frequency, permissions)
 
-        return render_template('home.html', inputList=inputList, results=results, result_num = len(results))
+        return render_template('home.html', inputList=inputList, permissions = permissions, results=results, result_num = len(results))
     else:
         # root_type = ''; root = ''; word = ''; version = ''; level = ''; lesson = ''; frequency = ''
         # inputList = [root_type, root, word, version, level, lesson, frequency]
         inputList = ['']*7
-        return render_template('home.html', inputList=inputList)
+        return render_template('home.html', inputList=inputList, permissions = permissions)
     
 '''Some example
 ## Insert
@@ -326,9 +345,6 @@ if __name__ == "__main__":
             $ sudo lsof -i :5501
         remove it
             $ sudo kill -9 portNumber
-        
-        都不選show全部
-        單一個！要顯示錯誤訊息
     '''
 
     context = (
