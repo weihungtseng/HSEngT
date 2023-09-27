@@ -1,0 +1,58 @@
+{% extends 'base.html' %} <!--index.html is base.html extend-->
+
+{% block head %}
+    <title>英文字根、字首、字尾查詢系統</title><!--new window label-->
+    <style>
+        .table-container {
+            text-align: center; /* 水平置中 */
+            margin: 0 auto; /* 水平置中 */
+        }
+
+        .gray-box {
+            background-color: #f0f0f0; /* 设置背景颜色为淡灰色 */
+            padding: 10px; /* 可选：添加内边距以增加文本块的间距 */
+            border: 1px solid #ccc; /* 可选：添加边框 */
+        }
+
+        table {
+            width: 50%;
+            margin: 0 auto;
+            /* border-collapse: collapse; */
+        }
+        th, td {
+            border: 1px solid black;
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            text-align: center;
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <form method="POST" action="/register">
+        <table border=0>
+            <tr>
+                <th>account</th>
+                <td><input type=text size=20 name='account'  value={{ inputList[0] }}></td>
+            </tr>
+            <tr>
+                <th>password</th>
+                <td><input type=text size=20 name='password' value={{ inputList[1] }}></td>
+            </tr>
+            <br>
+        </table>
+        <br>
+        <input type="Submit" value="提交">
+    </form>
+    {% if errorMessage|length < 1 %}
+    {% else %}
+    <br>
+    <div class="gray-box">
+        <p>error message: {{ errorMessage }}</p>
+    </div>
+    {% endif %}
+{% endblock %}

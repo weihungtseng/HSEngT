@@ -1,0 +1,160 @@
+{% extends 'base.html' %} <!--index.html is base.html extend-->
+
+{% block head %}
+    <title>英文字根、字首、字尾查詢系統</title><!--new window label-->
+    <style>
+        .table-container {
+            text-align: center; /* 水平置中 */
+            margin: 0 auto; /* 水平置中 */
+        }
+
+        .gray-box {
+            background-color: #f0f0f0; /* 设置背景颜色为淡灰色 */
+            padding: 10px; /* 可选：添加内边距以增加文本块的间距 */
+            border: 1px solid #ccc; /* 可选：添加边框 */
+        }
+
+        table {
+            width: 50%;
+            margin: 0 auto;
+            /* border-collapse: collapse; */
+        }
+        th, td {
+            border: 1px solid black;
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            text-align: center;
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function sortTable(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById("myTable");
+            switching = true;
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[columnIndex];
+                y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                if (columnIndex == 6) { // 假設第三個欄位是數字
+                    if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                    }
+                } else { // 其他欄位按照字串排序
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                    }
+                }
+                }
+                if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                }
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+    <form action="/home" method="POST">
+        <table border=0>
+            <tr>
+                <!--table header-->
+                <!--root_type, root, word, version, level, lesson, frequency-->
+                <th>root_type</th>
+                <th>root</th>
+                <th>word</th>
+                <th>version</th>
+                <th>level</th>
+                <th>lesson</th>
+                <th>frequency 大於</th>
+            </tr>
+            <tr>
+                <td><input type=text size=20 name='root_type' value={{ inputList[0] }}></td>
+                <td><input type=text size=20 name='root'      value={{ inputList[1] }}></td>
+                <td><input type=text size=20 name='word'      value={{ inputList[2] }}></td>
+                <td><input type=text size=20 name='version'   value={{ inputList[3] }}></td>
+                <td><input type=text size=20 name='level'     value={{ inputList[4] }}></td>
+                <td><input type=text size=20 name='lesson'    value={{ inputList[5] }}></td>
+                <td><input type=text size=20 name='frequency' value={{ inputList[6] }}></td>
+            </tr>
+            <br>
+        </table>
+        <br>
+        <input type="Submit" value="查詢">
+        <a href="/">登出</a>
+    </form>
+    <br>
+    <div class="gray-box">
+        <p>輸入【！】可屏蔽此欄位的資料</p>
+        <p>下方搜尋結果的表格可點擊欄位進行以此欄位為主的排序</p>
+    </div>
+    <br>
+    <div class="table-container">
+        <!--tutorial
+            filter(|)
+        -->
+        {% if results|length < 1 %}
+        <h4 style="text-align: center">There is no record or you have to query</h4>
+        {% else %}
+        <div class="gray-box">
+            <h1>搜尋結果：{{ result_num }} 筆</h1>
+        </div>
+        <br>
+        <table id="myTable">
+            <!--table row-->
+            <tr>
+                <!--table header-->
+                <th onclick="sortTable(0)">root_type</th>
+                <th onclick="sortTable(1)">root</th>
+                <th onclick="sortTable(2)">word</th>
+                <th onclick="sortTable(3)">version</th>
+                <th onclick="sortTable(4)">level</th>
+                <th onclick="sortTable(5)">lesson</th>
+                <th onclick="sortTable(6)">frequency</th>
+            </tr>
+            {% for result in results %}
+                <tr>
+                    <!--return the class_item of each task-->
+                    <td>{{ result.root_type }}</td>
+                    <td>{{ result.root }}</td>
+                    <td>{{ result.word }}</td>
+                    <td>{{ result.version }}</td>
+                    <td>{{ result.level }}</td>
+                    <td>{{ result.lesson }}</td>
+                    <td>{{ result.frequency }}</td>
+                    <!--
+                    <td>
+                        <a href="/delete/{{result.id}}">Delete</a>
+                        <br>
+                        <a href="/update/{{result.id}}">Update</a>
+                    </td>
+                    -->
+                </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+        <!-- 
+        <div class="form">
+            <form action="/" method="POST">
+                <label>class_item:</label><br>
+                <input type="text" name="class_item" id="class_item"><br>
+                <label>objects:</label><br>
+                <input type="text" name="objects" id="objects"><br>
+                <label>price:</label><br>
+                <input type="text" name="price" id="price"><br><br>
+                <input type="submit" value="submit">
+            </form>
+        </div> 
+        -->
+    </div>
+{% endblock %}

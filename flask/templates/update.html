@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Accounting tool</title>
+{% endblock %}
+
+{% block body %}
+<div class="content">
+    <h1 style="text-align: center">Update</h1>
+
+    <div class="form">
+        <form action="/update/{{results.id}}" method="POST">
+        <!--<form action="/update/{{results.id}}" method="GET">-->
+            <label>class_item:</label><br>
+            <input type="text" name="class_item" id="class_item" value="{{results.class_item}}"><br>
+            <label>objects:</label><br>
+            <input type="text" name="objects" id="objects" value="{{results.objects}}"><br>
+            <label>price:</label><br>
+            <input type="text" name="price" id="price" value="{{results.price}}"><br><br>
+            <input type="submit" value="Update">
+        </form>
+    </div>
+</div>
+{% endblock %}

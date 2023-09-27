@@ -1,0 +1,4 @@
+## Reference: https://gitbook.tw/chapters/using-git/ignore
+## 忽略所有附檔名是 xxx 的檔案
+*.tmp
+*.db
