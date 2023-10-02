@@ -200,6 +200,8 @@ def home_func1(root_type, root, word, version, level, lesson, frequency, permiss
             HSEngT 
         WHERE
             {where_condition} 
+        ORDER BY
+            {select_column}
     ''').fetchall()
     conn.close()
     return results

@@ -29,6 +29,12 @@
             background-color: #f2f2f2;
             cursor: pointer;
         }
+
+        .paragraphStyle1 {
+            border: 1px solid #000;
+            padding: 10px;
+            background-color: #EEF5FF;
+        }
     </style>
     <script>
         function sortTable(columnIndex) {
@@ -60,6 +66,23 @@
                 }
             }
         }
+    </script>
+    <script>
+        // 获取按钮和内容的引用
+        var toggleButton = document.getElementById("toggleButton");
+        var content = document.getElementById("content");
+    
+        // 添加按钮的点击事件处理程序
+        toggleButton.addEventListener("click", function () {
+            // 检查内容的当前状态
+            if (content.style.display === "none") {
+                // 如果内容是隐藏的，显示它
+                content.style.display = "block";
+            } else {
+                // 如果内容是可见的，隐藏它
+                content.style.display = "none";
+            }
+        });
     </script>
 {% endblock %}
 
@@ -94,17 +117,20 @@
         <a href="/">登出</a>
     </form>
     <br>
-    <div class="gray-box">
-        <p>輸入【！】可屏蔽此欄位的資料</p>
-        <p>下方搜尋結果的表格可點擊欄位進行以此欄位為主的排序</p>
-    </div>
+    <details class="gray-box">
+        <summary style="display: inline"><h3>使用說明</h3></summary>
+        <p class="paragraphStyle1">輸入【！】可屏蔽此欄位的資料</p>
+        <p class="paragraphStyle1">下方搜尋結果的表格可點擊欄位進行以此欄位為主的排序</p>
+    </details>
     <br>
     <div class="table-container">
         <!--tutorial
             filter(|)
         -->
         {% if results|length < 1 %}
-        <h4 style="text-align: center">There is no record or your permission is denied</h4>
+        <div class="gray-box">
+            <h4 style="text-align: center">There is no record or your permission is denied</h4>
+        </div>
         {% else %}
         <div class="gray-box">
             <h1>搜尋結果：{{ result_num }} 筆</h1>
