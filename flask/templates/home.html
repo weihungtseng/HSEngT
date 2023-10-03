@@ -98,7 +98,7 @@
                 <th>version</th>
                 <th>level</th>
                 <th>lesson</th>
-                <th>frequency 大於</th>
+                <th>frequency ></th>
             </tr>
             <tr>
                 <td><input type=text size=20 name='root_type' value={{ inputList[0] }}></td>
@@ -119,6 +119,40 @@
     <br>
     <details class="gray-box">
         <summary style="display: inline"><h3>使用說明</h3></summary>
+            <table>
+                <tr>
+                    <th>label</th>
+                    <th>input</th>
+                </tr>
+                <tr>
+                    <td>root_type</td>
+                    <td>Partial Match</td>
+                </tr>
+                <tr>
+                    <td>root</td>
+                    <td>Partial Match</td>
+                </tr>
+                <tr>
+                    <td>word</td>
+                    <td>Partial Match</td>
+                </tr>
+                <tr>
+                    <td>version</td>
+                    <td>Complete Match</td>
+                </tr>
+                <tr>
+                    <td>level</td>
+                    <td>Complete Match</td>
+                </tr>
+                <tr>
+                    <td>lesson</td>
+                    <td>Complete Match</td>
+                </tr>
+                <tr>
+                    <td>frequency</td>
+                    <td>Positive Integer</td>
+                </tr>
+            </table>
         <p class="paragraphStyle1">輸入【！】可屏蔽此欄位的資料</p>
         <p class="paragraphStyle1">下方搜尋結果的表格可點擊欄位進行以此欄位為主的排序</p>
     </details>
