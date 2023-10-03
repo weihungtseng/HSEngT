@@ -346,7 +346,7 @@ if __name__ == "__main__":
         get the process ID of the process that is running on the specified port.
             $ sudo lsof -i :5501
         remove it
-            $ sudo kill -9 portNumber
+            $ sudo kill -9 xxxx
     '''
 
     context = (
