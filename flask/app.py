@@ -125,7 +125,7 @@ def home_func1(root_type, root, word, version, level, lesson, frequency, permiss
     else: 
         select_column += 'root_type'
         if root_type:
-            where_condition += f"root_type = '{root_type}' "
+            where_condition += f"root_type LIKE '%{root_type}%' "
             where_flag[col_map['root_type']] = 1
     
     if root in ban_sign: select_flag[col_map['root']] = 0
@@ -134,7 +134,7 @@ def home_func1(root_type, root, word, version, level, lesson, frequency, permiss
         select_column += 'root'
         if root: 
             if 1 in where_flag[:1]: where_condition += 'AND '
-            where_condition += f"root = '{root}' "
+            where_condition += f"root LIKE '%{root}%' "
             where_flag[col_map['root']] = 1
 
     if word in ban_sign: select_flag[col_map['word']] = 0
@@ -143,7 +143,7 @@ def home_func1(root_type, root, word, version, level, lesson, frequency, permiss
         select_column += 'word'
         if word: 
             if 1 in where_flag[:2]: where_condition += 'AND '
-            where_condition += f"word = '{word}' "
+            where_condition += f"word LIKE '%{word}%' "
             where_flag[col_map['word']] = 1
     
     if version in ban_sign: select_flag[col_map['version']] = 0
