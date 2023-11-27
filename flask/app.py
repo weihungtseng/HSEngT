@@ -339,8 +339,8 @@ if __name__ == "__main__":
         To open port 5501, run:
         1. go to remote(ssh: web)
         2. $ sudo ufw allow 5501
-        3. $ sudo python3 app.py           # to test
-        4. $ nohup sudo python3 app.py &   # to deploy
+        3. $ sudo python3 app.py           # for test
+        4. $ nohup sudo python3 app.py &   # for deploy
 
         p.s.
         get the process ID of the process that is running on the specified port.
