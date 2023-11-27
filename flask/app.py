@@ -266,8 +266,6 @@ def home():
 
         return render_template('home.html', inputList=inputList, permissions = permissions, results=results, result_num = len(results))
     else:
-        # root_type = ''; root = ''; word = ''; version = ''; level = ''; lesson = ''; frequency = ''
-        # inputList = [root_type, root, word, version, level, lesson, frequency]
         inputList = ['']*7
         return render_template('home.html', inputList=inputList, permissions = permissions)
     
